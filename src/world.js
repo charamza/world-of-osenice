@@ -42,14 +42,26 @@ class World {
     this.platforms.push(new Platform(
       Math.sin(80 * gap * Math.PI / 180) * (distance + noisemap[0]),
       Math.cos(80 * gap * Math.PI / 180) * (distance + noisemap[0]),
-      Math.sin(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 5,
-      Math.cos(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 5
+      Math.sin(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 4,
+      Math.cos(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 4
     ).nonclimbable());
     this.platforms.push(new Platform(
       Math.sin(78 * gap * Math.PI / 180) * (distance + noisemap[78]) / 6 * 5,
       Math.cos(78 * gap * Math.PI / 180) * (distance + noisemap[78]) / 6 * 5,
-      Math.sin(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 5,
-      Math.cos(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 5
+      Math.sin(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 5,
+      Math.cos(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 5
+    ));
+    this.platforms.push(new Platform(
+      Math.sin(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 4,
+      Math.cos(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 4,
+      Math.sin(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 4,
+      Math.cos(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 4
+    ));
+    this.platforms.push(new Platform(
+      Math.sin(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 5,
+      Math.cos(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 5,
+      Math.sin(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 4,
+      Math.cos(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 4
     ));
   }
 

@@ -6,23 +6,27 @@ class Player extends Entity {
     this.px = 0;
     this.py = -y;
 
-    this.rot = 0;
     this.eyeRot = 0;
     this.steps = 0;
 
     this.leftEye = [-5, 0];
     this.rightEye = [5, 0];
+    this.legSpread = 0;
 
     this.falling = 0;
 
-    this.polygon = new SAT.Box(new SAT.Vector(), this.width, this.height).toPolygon();
+    this.polygon = new SAT.Polygon( new SAT.Vector(),[
+      new SAT.Vector(0, 0),
+      new SAT.Vector(0, this.height / 2),
+      new SAT.Vector(this.width / 2, this.height),
+      new SAT.Vector(this.width, this.height / 2),
+      new SAT.Vector(this.width, 0),
+    ]);//new SAT.Box(new SAT.Vector(), this.width, this.height).toPolygon();
   }
 
   update() {
     super.update();
 
-
-    this.rot = Math.atan2(-this.getX(), -this.getY());
     this.falling += 16;
     var vFalling = this.falling / 100;
     var colliding = false;
@@ -75,9 +79,12 @@ class Player extends Entity {
     if (this.rightEye[0] > 10) this.rightEye[0] = 10;
     if (this.rightEye[0] < -10) this.rightEye[0] = -10;
 
+    this.legSpread = 8 - (Math.abs(diffX * Math.cos(this.rot)) + Math.abs(diffY * Math.sin(this.rot))) / 20;
+    if (this.legSpread < 0) this.legSpread = 0;
+
     this.dx = 0;
-    if (this.game.input.isKeyDown(65) || this.game.input.isKeyDown(37)) this.dx = -1;
-    if (this.game.input.isKeyDown(68) || this.game.input.isKeyDown(39)) this.dx = 1;
+    if (!this.game.chat.active && this.game.input.isKeyDown(65) || this.game.input.isKeyDown(37)) this.dx = -1;
+    if (!this.game.chat.active && this.game.input.isKeyDown(68) || this.game.input.isKeyDown(39)) this.dx = 1;
     if (this.dx == 0) this.steps = 0; else this.steps++;
   }
 
@@ -110,6 +117,7 @@ class Player extends Entity {
     for (var i = 0; i < 2; i++) {
       gl.save();
       gl.beginPath();
+      gl.translate(this.legSpread * (i == 0 ? 1 : -1), 0);
       gl.rotate(Math.sin(this.steps / 10) * (i == 0 ? -1 : 1) / 3 * 2);
       gl.arc(0, this.height / 2 + 5, 5, Math.PI, Math.PI * 2);
       gl.moveTo(-6, this.height / 2 + 6);
@@ -130,7 +138,7 @@ class Player extends Entity {
   }
 
   getY() {
-    return -Math.cos(this.px * Math.PI / 180) * this.py
+    return -Math.cos(this.px * Math.PI / 180) * (this.py - 3);
   }
 
 }

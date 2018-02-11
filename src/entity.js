@@ -8,12 +8,13 @@ class Entity {
     this.height = height;
 
     this.speed = 1.0;
+    this.rot = 0;
     this.dx = 0;
     this.dy = 0;
   }
 
   update() {
-
+    this.rot = Math.atan2(-this.getX(), -this.getY());
   }
 
   render(gl) {

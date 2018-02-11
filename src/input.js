@@ -20,6 +20,7 @@ class Input {
 
   onkeydown(e) {
     this.keys[e.keyCode] = true;
+    if (e.keyCode == 13) this.game.chat.onenter();
   }
 
   onkeyup(e) {
@@ -27,6 +28,7 @@ class Input {
   }
 
   isKeyDown(keycode) {
+    if (this.game.chat.active) return false;
     return (typeof this.keys[keycode] !== 'undefined' && this.keys[keycode]);
   }
 

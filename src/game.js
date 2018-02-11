@@ -7,10 +7,11 @@ class Game {
     window.onresize = (e) => this.onresize(e);
     this.onresize();
 
+    this.chat = new Chat(this);
     this.input = new Input(this);
     this.camera = new Camera(this);
     this.world = new World(this);
-    this.player = new Player(this, 0, -1660);
+    this.player = new Player(this, 0, -860);
 
     this.lastFrame = performance.now();
     this.STEPS = 0;
