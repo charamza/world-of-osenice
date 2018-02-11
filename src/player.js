@@ -8,10 +8,31 @@ class Player extends Entity {
 
     this.leftEye = [10, 0];
     this.rightEye = [10, 0];
+
+    this.falling = 0;
+
+    this.polygon = new SAT.Box(new SAT.Vector(), this.width, this.height).toPolygon();
   }
 
   update() {
     super.update();
+
+
+    var dirToCenter = Math.atan2(-this.x, -this.y);
+    this.falling += 16;
+    var vFalling = this.falling / 100;
+    var mx = Math.sin(dirToCenter) * vFalling;
+    var my = Math.cos(dirToCenter) * vFalling;
+    this.x += mx;
+    this.y += my;
+    this.polygon.setOffset(new SAT.Vector(this.x - this.width / 2, this.y - this.height / 2 + 5));
+    var coll = this.game.world.collision(this.polygon);
+    if (coll != null) {
+      this.x -= mx;
+      this.y -= my;
+      this.falling = 0;
+      if (this.game.input.isKeyDown(32)) this.jump();
+    }
 
     var diffX = this.game.input.mx - this.game.WIDTH / 2;
     var diffY = this.game.input.my - this.game.HEIGHT / 2;
@@ -35,8 +56,6 @@ class Player extends Entity {
         this.eyeRot = Math.PI - (this.eyeRot - Math.PI) / Math.abs(11 - distance / 10) * (dangle < 180 ? 1 : -1);
       }
     }
-
-    console.log(dangle);
 
     this.dx = 0;
     if (this.game.input.isKeyDown(65) || this.game.input.isKeyDown(37)) this.dx = -1;
@@ -81,6 +100,10 @@ class Player extends Entity {
     }
 
     gl.restore();
+  }
+
+  jump() {
+    this.falling = -700;
   }
 
 }

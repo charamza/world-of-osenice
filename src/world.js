@@ -8,7 +8,7 @@ class World {
   }
 
   setup() {
-    this.lines = [];
+    this.platforms = [];
 
     var iterations = 40;
     var gap = 360 / iterations;
@@ -23,7 +23,7 @@ class World {
       var y1 = Math.cos(a1) * distance + cy;
       var x2 = Math.sin(a2) * distance + cx;
       var y2 = Math.cos(a2) * distance + cy;
-      this.lines.push({x1: x1, y1: y1, x2: x2, y2: y2});
+      this.platforms.push(new Platform(x1, y1, x2, y2));
     }
   }
 
@@ -39,13 +39,21 @@ class World {
     gl.beginPath();
     gl.lineWidth = 2;
     gl.strokeStyle = 'green';
-    for (var i = 0; i < this.lines.length; i++) {
-      var line = this.lines[i];
-      gl.moveTo(line.x1, line.y1);
-      gl.lineTo(line.x2, line.y2);
+    for (var i = 0; i < this.platforms.length; i++) {
+      this.platforms[i].render(gl);
     }
     gl.stroke();
     gl.restore();
+  }
+
+  collision(other) {
+    var response = new SAT.Response();
+    for (var i = 0; i < this.platforms.length; i++) {
+      if (this.platforms[i].collision(other, response)) {
+        return response;
+      }
+    }
+    return null;
   }
 
 }
