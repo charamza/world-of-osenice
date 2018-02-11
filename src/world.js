@@ -25,22 +25,35 @@ class World {
       var y2 = Math.cos(a2) * distance + cy;
       this.platforms.push(new Platform(x1, y1, x2, y2));
     }
+    this.platforms.push(new Platform(
+      Math.sin(38 * gap * Math.PI / 180) * distance,
+      Math.cos(38 * gap * Math.PI / 180) * distance,
+      Math.sin(38 * gap * Math.PI / 180) * distance / 6 * 5,
+      Math.cos(38 * gap * Math.PI / 180) * distance / 6 * 5
+    ));
+    this.platforms.push(new Platform(
+      Math.sin(40 * gap * Math.PI / 180) * distance,
+      Math.cos(40 * gap * Math.PI / 180) * distance,
+      Math.sin(40 * gap * Math.PI / 180) * distance / 6 * 5,
+      Math.cos(40 * gap * Math.PI / 180) * distance / 6 * 5
+    ));
+    this.platforms.push(new Platform(
+      Math.sin(38 * gap * Math.PI / 180) * distance / 6 * 5,
+      Math.cos(38 * gap * Math.PI / 180) * distance / 6 * 5,
+      Math.sin(40 * gap * Math.PI / 180) * distance / 6 * 5,
+      Math.cos(40 * gap * Math.PI / 180) * distance / 6 * 5
+    ));
   }
 
   update() {
-    this.rot += this.game.player.dx * -1;
-    var rotation = this.rot * Math.PI / 180;
     for (var i = 0; i < this.platforms.length; i++) {
-      this.platforms[i].polygon.setAngle(rotation);
+      this.platforms[i].polygon.setAngle(this.game.player.rot);
     }
   }
 
   render(gl) {
-    var rotation = this.rot * Math.PI / 180;
     gl.save();
-    //gl.translate(this.game.WIDTH / 2, this.game.HEIGHT / 2);
     this.game.camera.translate(gl);
-    gl.rotate(rotation);
     gl.beginPath();
     gl.lineWidth = 2;
     gl.strokeStyle = 'green';

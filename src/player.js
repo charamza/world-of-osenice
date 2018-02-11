@@ -3,6 +3,7 @@ class Player extends Entity {
   constructor(game, x, y) {
     super(game, x, y, 32, 32);
 
+    this.rot = 0;
     this.eyeRot = 0;
     this.steps = 0;
 
@@ -18,18 +19,32 @@ class Player extends Entity {
     super.update();
 
 
-    var dirToCenter = Math.atan2(-this.x, -this.y);
+    this.rot = Math.atan2(-this.x, -this.y);
     this.falling += 16;
     var vFalling = this.falling / 100;
-    var mx = Math.sin(dirToCenter) * vFalling;
-    var my = Math.cos(dirToCenter) * vFalling;
-    this.x += mx;
-    this.y += my;
-    this.polygon.setOffset(new SAT.Vector(this.x - this.width / 2, this.y - this.height / 2 + 7));
-    var coll = this.game.world.collision(this.polygon);
-    if (coll != null) {
-      this.x -= mx;
-      this.y -= my;
+    var mx = Math.sin(this.rot) * vFalling + this.dx * Math.cos(-this.rot) * 6;
+    var my = Math.cos(this.rot) * vFalling + this.dx * Math.sin(-this.rot) * 6;
+    var colliding = false;
+
+    this.polygon.setOffset(new SAT.Vector(this.x + mx - this.width / 2 + 8 * Math.sin(this.rot), this.y - this.height / 2 + 8 * Math.cos(this.rot)));
+    var collX = this.game.world.collision(this.polygon);
+    this.polygon.setOffset(new SAT.Vector(this.x - this.width / 2 + 8 * Math.sin(this.rot), this.y + my - this.height / 2 + 8 * Math.cos(this.rot)));
+    var collY = this.game.world.collision(this.polygon);
+    if (collX != null) {
+      this.x -= collX.overlapV.x;
+      colliding = true;
+    } else {
+      this.x += mx;
+    }
+
+    if (collY != null) {
+      this.y -= collY.overlapV.y;
+      colliding = true;
+    } else {
+      this.y += my;
+    }
+
+    if (colliding) {
       this.falling = 0;
       if (this.game.input.isKeyDown(32)) this.jump();
     }
@@ -37,7 +52,7 @@ class Player extends Entity {
     var diffX = this.game.input.mx - this.game.WIDTH / 2;
     var diffY = this.game.input.my - this.game.HEIGHT / 2;
 
-    var angle = -Math.atan2(diffX, diffY) + Math.PI / 2;
+    var angle = -Math.atan2(diffX, diffY) + Math.PI / 2 + this.rot;
     var distance = Math.sqrt(diffX * diffX + diffY * diffY);
 
     this.eyeRot = angle;
@@ -65,18 +80,19 @@ class Player extends Entity {
 
     gl.save();
     this.game.camera.translate(gl);
+    gl.translate(this.x, this.y);
+    gl.rotate(-this.rot);
 
     gl.lineWidth = 2;
     gl.strokeStyle = 'black';
 
     gl.beginPath();
-    gl.arc(this.x, this.y, this.width / 2, 0, Math.PI * 2);
+    gl.arc(0, 0, this.width / 2, 0, Math.PI * 2);
     gl.stroke();
 
     for (var i = 0; i < 2; i++) {
       var eye = (i == 0 ? this.leftEye : this.rightEye);
       gl.save();
-      gl.translate(this.x, this.y);
       gl.beginPath();
       gl.arc(eye[0], eye[1], 3, 0, Math.PI * 2);
       gl.stroke();
@@ -86,7 +102,6 @@ class Player extends Entity {
     for (var i = 0; i < 2; i++) {
       gl.save();
       gl.beginPath();
-      gl.translate(this.x, this.y);
       gl.rotate(Math.sin(this.steps / 10) * (i == 0 ? -1 : 1) / 3 * 2);
       gl.arc(0, this.height / 2 + 5, 5, Math.PI, Math.PI * 2);
       gl.moveTo(-6, this.height / 2 + 6);

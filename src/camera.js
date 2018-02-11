@@ -9,6 +9,8 @@ class Camera {
   update(entity) {
     this.x = game.WIDTH / 2 - entity.x;
     this.y = game.HEIGHT / 2 - entity.y;
+    /*this.x -= Math.sin(this.game.world.rot) * 800;
+    this.y -= Math.cos(this.game.world.rot) * 800;*/
   }
 
   translate(gl) {

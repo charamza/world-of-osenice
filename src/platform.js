@@ -13,7 +13,7 @@ class Platform {
   }
 
   collision(other, response) {
-    return SAT.testPolygonPolygon(this.polygon, other, response);
+    return SAT.testPolygonPolygon(other, this.polygon, response);
   }
 
   render(gl) {
