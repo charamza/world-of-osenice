@@ -4,6 +4,9 @@ class Input {
     this.game = game;
     this.keys = {};
 
+    this.mx = this.game.WIDTH / 2;
+    this.my = this.game.HEIGHT / 2;
+
     window.onmousemove = (e) => this.onmousemove(e);
     window.onkeydown = (e) => this.onkeydown(e);
     window.onkeyup = (e) => this.onkeyup(e);

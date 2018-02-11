@@ -3,12 +3,15 @@ class Player extends Entity {
   constructor(game, x, y) {
     super(game, x, y, 32, 32);
 
+    this.px = 0;
+    this.py = -y;
+
     this.rot = 0;
     this.eyeRot = 0;
     this.steps = 0;
 
-    this.leftEye = [10, 0];
-    this.rightEye = [10, 0];
+    this.leftEye = [-5, 0];
+    this.rightEye = [5, 0];
 
     this.falling = 0;
 
@@ -19,34 +22,37 @@ class Player extends Entity {
     super.update();
 
 
-    this.rot = Math.atan2(-this.x, -this.y);
+    this.rot = Math.atan2(-this.getX(), -this.getY());
     this.falling += 16;
     var vFalling = this.falling / 100;
-    var mx = Math.sin(this.rot) * vFalling + this.dx * Math.cos(-this.rot) * 6;
-    var my = Math.cos(this.rot) * vFalling + this.dx * Math.sin(-this.rot) * 6;
     var colliding = false;
 
-    this.polygon.setOffset(new SAT.Vector(this.x + mx - this.width / 2 + 8 * Math.sin(this.rot), this.y - this.height / 2 + 8 * Math.cos(this.rot)));
-    var collX = this.game.world.collision(this.polygon);
-    this.polygon.setOffset(new SAT.Vector(this.x - this.width / 2 + 8 * Math.sin(this.rot), this.y + my - this.height / 2 + 8 * Math.cos(this.rot)));
-    var collY = this.game.world.collision(this.polygon);
+    var mx = this.dx * 0.5;
+    var my = -vFalling;
+
+    this.polygon.setOffset(new SAT.Vector(0, - this.py - 10));
+    var collX = this.game.world.collision(this.polygon, -(this.px + mx - 1.4) * Math.PI / 180);
+    this.polygon.setOffset(new SAT.Vector(0, - this.py - my - 7));
+    var collY = this.game.world.collision(this.polygon, -(this.px - 1.4) * Math.PI / 180);
     if (collX != null) {
-      this.x -= collX.overlapV.x;
+      if (collX.climbable && this.falling >= 0) {
+        this.py += collX.overlapV.y;
+      }
       colliding = true;
     } else {
-      this.x += mx;
+      this.px += mx;
     }
 
     if (collY != null) {
-      this.y -= collY.overlapV.y;
+      this.py += collY.overlapV.y;
       colliding = true;
+      this.falling = 0;
+      if (this.game.input.isKeyDown(32)) this.jump();
     } else {
-      this.y += my;
+      this.py += my;
     }
 
     if (colliding) {
-      this.falling = 0;
-      if (this.game.input.isKeyDown(32)) this.jump();
     }
 
     var diffX = this.game.input.mx - this.game.WIDTH / 2;
@@ -80,7 +86,9 @@ class Player extends Entity {
 
     gl.save();
     this.game.camera.translate(gl);
-    gl.translate(this.x, this.y);
+    var mx = this.getX();
+    var my = this.getY();
+    gl.translate(mx, my);
     gl.rotate(-this.rot);
 
     gl.lineWidth = 2;
@@ -115,6 +123,14 @@ class Player extends Entity {
 
   jump() {
     this.falling = -700;
+  }
+
+  getX() {
+    return Math.sin(this.px * Math.PI / 180) * this.py;
+  }
+
+  getY() {
+    return -Math.cos(this.px * Math.PI / 180) * this.py
   }
 
 }

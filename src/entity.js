@@ -13,11 +13,19 @@ class Entity {
   }
 
   update() {
-    
+
   }
 
   render(gl) {
 
+  }
+
+  getX() {
+    return this.x;
+  }
+
+  getY() {
+    return this.y;
   }
 
 }

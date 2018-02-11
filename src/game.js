@@ -10,7 +10,7 @@ class Game {
     this.input = new Input(this);
     this.camera = new Camera(this);
     this.world = new World(this);
-    this.player = new Player(this, 0, -860);
+    this.player = new Player(this, 0, -1660);
 
     this.lastFrame = performance.now();
     this.STEPS = 0;
