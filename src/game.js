@@ -4,10 +4,13 @@ class Game {
     this.canvas = document.getElementById('gamespace');
     this.gl = this.canvas.getContext('2d');
 
-    window.onresize = () => this.onresize();
+    window.onresize = (e) => this.onresize(e);
     this.onresize();
 
+    this.input = new Input(this);
+    this.camera = new Camera(this);
     this.world = new World(this);
+    this.player = new Player(this, 0, -820);
 
     this.lastFrame = performance.now();
     this.STEPS = 0;
@@ -28,6 +31,8 @@ class Game {
     //console.log(delta);
 
     this.world.update();
+    this.player.update();
+    this.camera.update(this.player);
 
     this.STEPS++;
     this.render();
@@ -36,6 +41,7 @@ class Game {
   render() {
     this.gl.clearRect(0, 0, this.WIDTH, this.HEIGHT);
     this.world.render(this.gl);
+    this.player.render(this.gl);
     window.requestAnimationFrame(() => this.update());
   }
 

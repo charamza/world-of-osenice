@@ -3,6 +3,8 @@ class World {
   constructor(game) {
     this.game = game;
     this.setup();
+
+    this.rot = 0;
   }
 
   setup() {
@@ -10,7 +12,7 @@ class World {
 
     var iterations = 40;
     var gap = 360 / iterations;
-    var distance = 300;
+    var distance = 800;
     var cx = 0;
     var cy = 0;
 
@@ -26,12 +28,14 @@ class World {
   }
 
   update() {
-
+    this.rot += this.game.player.dx * -1;
   }
 
   render(gl) {
     gl.save();
-    gl.translate(this.game.WIDTH / 2, this.game.HEIGHT / 2);
+    //gl.translate(this.game.WIDTH / 2, this.game.HEIGHT / 2);
+    this.game.camera.translate(gl);
+    gl.rotate(this.rot * Math.PI / 180);
     gl.beginPath();
     gl.lineWidth = 2;
     gl.strokeStyle = 'green';
