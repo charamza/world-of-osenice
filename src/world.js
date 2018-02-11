@@ -16,7 +16,7 @@ class World {
     var cx = 0;
     var cy = 0;
 
-    for (var i = 0; i < iterations; i++) {
+    for (var i = 0; i < iterations - 2; i++) {
       var a1 = i * gap * Math.PI / 180;
       var a2 = (i + 1) * gap * Math.PI / 180;
       var x1 = Math.sin(a1) * distance + cx;
@@ -29,13 +29,18 @@ class World {
 
   update() {
     this.rot += this.game.player.dx * -1;
+    var rotation = this.rot * Math.PI / 180;
+    for (var i = 0; i < this.platforms.length; i++) {
+      this.platforms[i].polygon.setAngle(rotation);
+    }
   }
 
   render(gl) {
+    var rotation = this.rot * Math.PI / 180;
     gl.save();
     //gl.translate(this.game.WIDTH / 2, this.game.HEIGHT / 2);
     this.game.camera.translate(gl);
-    gl.rotate(this.rot * Math.PI / 180);
+    gl.rotate(rotation);
     gl.beginPath();
     gl.lineWidth = 2;
     gl.strokeStyle = 'green';

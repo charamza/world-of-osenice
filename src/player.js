@@ -25,7 +25,7 @@ class Player extends Entity {
     var my = Math.cos(dirToCenter) * vFalling;
     this.x += mx;
     this.y += my;
-    this.polygon.setOffset(new SAT.Vector(this.x - this.width / 2, this.y - this.height / 2 + 5));
+    this.polygon.setOffset(new SAT.Vector(this.x - this.width / 2, this.y - this.height / 2 + 7));
     var coll = this.game.world.collision(this.polygon);
     if (coll != null) {
       this.x -= mx;
@@ -39,23 +39,20 @@ class Player extends Entity {
 
     var angle = -Math.atan2(diffX, diffY) + Math.PI / 2;
     var distance = Math.sqrt(diffX * diffX + diffY * diffY);
-    var dangle = angle / Math.PI * 180 % 360;
 
-    if (dangle > 150 || dangle < 30) {
-      this.eyeRot = angle % (Math.PI * 2);
-    }
+    this.eyeRot = angle;
 
-    this.leftEye[0] = distance / 10 + 5;
-    this.rightEye[0] = distance / 10 - 5;
+    var dist = distance / 10;
+    if (dist > 15) dist = 15;
+    this.leftEye[0] = Math.cos(this.eyeRot) * dist - 5;
+    this.leftEye[1] = Math.sin(this.eyeRot) * dist / 15 * 10;
+    this.rightEye[0] = Math.cos(this.eyeRot) * dist + 5;
+    this.rightEye[1] = Math.sin(this.eyeRot) * dist / 15 * 10;
+
     if (this.leftEye[0] > 10) this.leftEye[0] = 10;
+    if (this.leftEye[0] < -10) this.leftEye[0] = -10;
     if (this.rightEye[0] > 10) this.rightEye[0] = 10;
-    if (distance / 10 < 10) {
-      if (dangle < 90 || dangle > 270) {
-        this.eyeRot /= Math.abs(11 - distance / 10);
-      } else {
-        this.eyeRot = Math.PI - (this.eyeRot - Math.PI) / Math.abs(11 - distance / 10) * (dangle < 180 ? 1 : -1);
-      }
-    }
+    if (this.rightEye[0] < -10) this.rightEye[0] = -10;
 
     this.dx = 0;
     if (this.game.input.isKeyDown(65) || this.game.input.isKeyDown(37)) this.dx = -1;
@@ -81,7 +78,6 @@ class Player extends Entity {
       gl.save();
       gl.translate(this.x, this.y);
       gl.beginPath();
-      gl.rotate(this.eyeRot);
       gl.arc(eye[0], eye[1], 3, 0, Math.PI * 2);
       gl.stroke();
       gl.restore();

@@ -8,7 +8,6 @@ class Platform {
     this.rot = 0;
     this.polygon = new SAT.Polygon(new SAT.Vector(), [
       new SAT.Vector(x1, y1),
-      new SAT.Vector(),
       new SAT.Vector(x2, y2)
     ]);
   }
