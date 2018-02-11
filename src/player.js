@@ -1,10 +1,10 @@
 class Player extends Entity {
 
-  constructor(game, x, y) {
-    super(game, x, y, 32, 32);
+  constructor(game, px, y) {
+    super(game, 0, y, 32, 32);
 
-    this.px = 0;
-    this.py = -y;
+    this.px = px;
+    this.py = y;
 
     this.eyeRot = 0;
     this.steps = 0;
@@ -12,16 +12,11 @@ class Player extends Entity {
     this.leftEye = [-5, 0];
     this.rightEye = [5, 0];
     this.legSpread = 0;
+    this.legRot = 0;
+
+    this.cursor = [game.WIDTH / 2, game.HEIGHT / 2];
 
     this.falling = 0;
-
-    this.polygon = new SAT.Polygon( new SAT.Vector(),[
-      new SAT.Vector(0, 0),
-      new SAT.Vector(0, this.height / 2),
-      new SAT.Vector(this.width / 2, this.height),
-      new SAT.Vector(this.width, this.height / 2),
-      new SAT.Vector(this.width, 0),
-    ]);//new SAT.Box(new SAT.Vector(), this.width, this.height).toPolygon();
   }
 
   update() {
@@ -42,25 +37,23 @@ class Player extends Entity {
       if (collX.climbable && this.falling >= 0) {
         this.py += collX.overlapV.y;
       }
-      colliding = true;
     } else {
       this.px += mx;
     }
 
     if (collY != null) {
       this.py += collY.overlapV.y;
-      colliding = true;
       this.falling = 0;
-      if (this.game.input.isKeyDown(32)) this.jump();
+      if (this instanceof PlayerLocal && this.game.input.isKeyDown(32)) this.jump();
+      var platformNormal = Math.atan2(collY.overlapN.x, collY.overlapN.y);
+      this.legRot = platformNormal;// - this.rot;
+      //this.legRot = (this.legRot + Math.PI) % (Math.PI * 2) - Math.PI;
     } else {
       this.py += my;
     }
 
-    if (colliding) {
-    }
-
-    var diffX = this.game.input.mx - this.game.WIDTH / 2;
-    var diffY = this.game.input.my - this.game.HEIGHT / 2;
+    var diffX = this.cursor[0] - this.game.WIDTH / 2;
+    var diffY = this.cursor[1] - this.game.HEIGHT / 2;
 
     var angle = -Math.atan2(diffX, diffY) + Math.PI / 2 + this.rot;
     var distance = Math.sqrt(diffX * diffX + diffY * diffY);
@@ -82,9 +75,6 @@ class Player extends Entity {
     this.legSpread = 8 - (Math.abs(diffX * Math.cos(this.rot)) + Math.abs(diffY * Math.sin(this.rot))) / 20;
     if (this.legSpread < 0) this.legSpread = 0;
 
-    this.dx = 0;
-    if (!this.game.chat.active && this.game.input.isKeyDown(65) || this.game.input.isKeyDown(37)) this.dx = -1;
-    if (!this.game.chat.active && this.game.input.isKeyDown(68) || this.game.input.isKeyDown(39)) this.dx = 1;
     if (this.dx == 0) this.steps = 0; else this.steps++;
   }
 
@@ -92,7 +82,7 @@ class Player extends Entity {
     super.render(gl);
 
     gl.save();
-    this.game.camera.translate(gl);
+    if (this instanceof PlayerLocal) this.game.camera.translate(gl);
     var mx = this.getX();
     var my = this.getY();
     gl.translate(mx, my);
@@ -118,7 +108,7 @@ class Player extends Entity {
       gl.save();
       gl.beginPath();
       gl.translate(this.legSpread * (i == 0 ? 1 : -1), 0);
-      gl.rotate(Math.sin(this.steps / 10) * (i == 0 ? -1 : 1) / 3 * 2);
+      gl.rotate(-this.legRot + Math.sin(this.steps / 10) * (i == 0 ? -1 : 1) / 3 * 2);
       gl.arc(0, this.height / 2 + 5, 5, Math.PI, Math.PI * 2);
       gl.moveTo(-6, this.height / 2 + 6);
       gl.lineTo(6, this.height / 2 + 6);

@@ -3,12 +3,11 @@ class World {
   constructor(game) {
     this.game = game;
     this.setup();
-
-    this.rot = 0;
   }
 
   setup() {
     this.platforms = [];
+    this.entities = [];
 
     var iterations = 80;
     var gap = 360 / iterations;
@@ -21,7 +20,6 @@ class World {
 
     for (var i = 0; i < iterations + 1; i++) {
       noisemap[i] = noise.simplex2(i, 0) * 20;
-      console.log(noisemap[i]);
     }
 
     for (var i = 0; i < iterations - 2; i++) {
@@ -66,9 +64,9 @@ class World {
   }
 
   update() {
-    /*for (var i = 0; i < this.platforms.length; i++) {
-      this.platforms[i].polygon.setAngle(this.game.player.rot);
-    }*/
+    for (var i = 0; i < this.entities.length; i++) {
+      this.entities[i].update();
+    }
   }
 
   render(gl) {
@@ -81,6 +79,9 @@ class World {
       this.platforms[i].render(gl);
     }
     gl.stroke();
+    for (var i = 0; i < this.entities.length; i++) {
+      this.entities[i].render(gl);
+    }
     gl.restore();
   }
 
@@ -92,6 +93,16 @@ class World {
       }
     }
     return null;
+  }
+
+  addEntity(entity) {
+    this.entities.push(entity);
+  }
+
+  removeEntity(entity) {
+    var index = this.entities.indexOf(entity);
+    if (index == -1) return;
+    this.entities.splice(index, 1);
   }
 
 }

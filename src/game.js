@@ -11,7 +11,10 @@ class Game {
     this.input = new Input(this);
     this.camera = new Camera(this);
     this.world = new World(this);
-    this.player = new Player(this, 0, -860);
+    this.player = new PlayerLocal(this, 0, 860);
+
+    this.world.addEntity(new Teleport(this, -800, 0));
+    this.world.addEntity(new Player(this, -92.75, 860));
 
     this.lastFrame = performance.now();
     this.STEPS = 0;
