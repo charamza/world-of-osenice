@@ -18,7 +18,9 @@ class Entity {
       new SAT.Vector(this.width / 2, this.height),
       new SAT.Vector(this.width, this.height / 2),
       new SAT.Vector(this.width, 0),
-    ]);//new SAT.Box(new SAT.Vector(), this.width, this.height).toPolygon();
+    ]);
+
+    this.polygonBounds = new SAT.Box(new SAT.Vector(), this.width, this.height).toPolygon();
   }
 
   update() {
@@ -29,12 +31,30 @@ class Entity {
 
   }
 
+  postrender(gl) {
+
+  }
+
   getX() {
     return this.x;
   }
 
   getY() {
     return this.y;
+  }
+
+  collision(entity) {
+    this.updateBoundsPolygon();
+    return SAT.testPolygonPolygon(entity.polygonBounds, this.polygonBounds);
+  }
+
+  getDistance(entity) {
+    var distance = Math.sqrt(Math.pow(this.getX() - entity.getX(), 2) + Math.pow(this.getY() - entity.getY(), 2));
+    return distance;
+  }
+
+  updateBoundsPolygon() {
+    this.polygonBounds.setOffset(new SAT.Vector(this.getX(), this.getY()));
   }
 
 }

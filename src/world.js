@@ -3,6 +3,8 @@ class World {
   constructor(game) {
     this.game = game;
     this.setup();
+
+    this.opacity = 1;
   }
 
   setup() {
@@ -67,11 +69,21 @@ class World {
     for (var i = 0; i < this.entities.length; i++) {
       this.entities[i].update();
     }
+
+    this.opacity = 1;
+    if (this.game.player.teleportingSteps > 300) {
+      this.opacity = (100 - (this.game.player.teleportingSteps - 300)) / 100;
+      if (this.opacity < 0) {
+        this.opacity = 0;
+        this.awayFromThisWorld();
+      }
+    }
   }
 
   render(gl) {
     gl.save();
     this.game.camera.translate(gl);
+    gl.globalAlpha = this.opacity;
     gl.beginPath();
     gl.lineWidth = 2;
     gl.strokeStyle = 'green';
@@ -81,6 +93,16 @@ class World {
     gl.stroke();
     for (var i = 0; i < this.entities.length; i++) {
       this.entities[i].render(gl);
+    }
+    gl.restore();
+  }
+
+  postrender(gl) {
+    gl.save();
+    gl.globalAlpha = this.opacity;
+    this.game.camera.translate(gl);
+    for (var i = 0; i < this.entities.length; i++) {
+      this.entities[i].postrender(gl);
     }
     gl.restore();
   }
@@ -95,6 +117,18 @@ class World {
     return null;
   }
 
+  collisionEntities(entity) {
+    var entities = [];
+    entity.updateBoundsPolygon();
+    for (var i = 0; i < this.entities.length; i++) {
+      if (this.entities[i] == entity) continue;
+      if (this.entities[i].collision(entity)) {
+        entities.push(this.entities[i]);
+      }
+    }
+    return entities;
+  }
+
   addEntity(entity) {
     this.entities.push(entity);
   }
@@ -103,6 +137,10 @@ class World {
     var index = this.entities.indexOf(entity);
     if (index == -1) return;
     this.entities.splice(index, 1);
+  }
+
+  awayFromThisWorld() {
+
   }
 
 }

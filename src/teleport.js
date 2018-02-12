@@ -1,14 +1,14 @@
 class Teleport extends Entity{
 
   constructor(game, x, y) {
-    super(game, x, y, 40, 40);
+    super(game, x, y, 30, 40);
   }
 
   update() {
     super.update();
   }
 
-  render(gl) {
+  postrender(gl) {
     super.render(gl);
 
     gl.save();
@@ -16,6 +16,7 @@ class Teleport extends Entity{
     gl.translate(this.getX(), this.getY());
     gl.rotate(this.rot);
     gl.scale(2, 1);
+    gl.lineWidth = 1;
 
     this.drawCircle(gl, 0);
     this.drawCircle(gl, 1);
@@ -23,19 +24,29 @@ class Teleport extends Entity{
     this.drawCircle(gl, 3);
     this.drawCircle(gl, 4);
     this.drawCircle(gl, 5);
+    this.drawCircle(gl, 6);
+    this.drawCircle(gl, 7);
+    this.drawCircle(gl, 8);
+    this.drawCircle(gl, 9);
+    this.drawCircle(gl, 10);
+    this.drawCircle(gl, 11);
 
     gl.restore();
   }
 
+  collision(entity) {
+    return this.getDistance(entity) < (this.width + entity.width);
+  }
+
   strokeByShift(gl, shift) {
-    gl.strokeStyle = 'rgba(0, 0, 255, ' + shift / 60 + ')';
+    gl.strokeStyle = 'rgba(0, 0, 255, ' + shift / 120 + ')';
   }
 
   drawCircle(gl, offset) {
     gl.beginPath();
-    var shift = Math.sin((this.game.STEPS + offset * 25) % 150 * Math.PI / 300) * 80;
+    var shift = Math.sin((this.game.STEPS + offset * 25) % 300 * Math.PI / 600) * 120;
     this.strokeByShift(gl, shift);
-    gl.arc(20, 82 - shift, 10, 0, Math.PI*2, false);
+    gl.arc(0, 122 - shift, this.width / 3 * 2, 0, Math.PI*2, false);
     gl.stroke();
   }
 

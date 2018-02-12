@@ -42,6 +42,7 @@ class Chat {
   sendMessage(message) {
     if (message == '') return;
     this.addMessage('Honza', message);
+    this.game.player.lastMessages.unshift([message, this.game.STEPS]);
   }
 
   addMessage(name, message) {
