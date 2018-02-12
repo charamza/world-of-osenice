@@ -41,8 +41,13 @@ class Chat {
 
   sendMessage(message) {
     if (message == '') return;
+    if (message.length > 1000) {
+      this.addMessage('Server', 'Tvoje zpráva je moc dlouhá, napiš novou a kratší...');
+      return;
+    }
     this.addMessage('Honza', message);
     this.game.player.lastMessages.unshift([message, this.game.STEPS]);
+    this.game.network.add('message', message, true);
   }
 
   addMessage(name, message) {

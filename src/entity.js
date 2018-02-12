@@ -57,4 +57,10 @@ class Entity {
     this.polygonBounds.setOffset(new SAT.Vector(this.getX(), this.getY()));
   }
 
+  synchronize(data) {
+    if (data.px !== undefined) this.px = data.px;
+    if (data.py !== undefined) this.py = data.py;
+    if (data.dx !== undefined) this.dx = data.dx;
+  }
+
 }

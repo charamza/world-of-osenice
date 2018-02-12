@@ -12,23 +12,13 @@ class PlayerLocal extends Player {
       if (this.game.input.isKeyDown(65) || this.game.input.isKeyDown(37)) this.dx = -1;
       if (this.game.input.isKeyDown(68) || this.game.input.isKeyDown(39)) this.dx = 1;
 
-      var mmx = this.game.input.mx;
-      var mmy = this.game.input.my;
-      if (mmx > this.game.WIDTH / 2 + 200) mmx = this.game.WIDTH / 2 + 200;
-      if (mmx < this.game.WIDTH / 2 - 200) mmx = this.game.WIDTH / 2 - 200;
-      if (mmy > this.game.HEIGHT / 2 + 200) mmy = this.game.HEIGHT / 2 + 200;
-      if (mmy < this.game.HEIGHT / 2 - 200) mmy = this.game.HEIGHT / 2 - 200;
-      var diffX = mmx - this.cursor[0];
-      var diffY = mmy - this.cursor[1];
-      var diffAngle = Math.atan2(diffX, diffY);
-      var transitionSpeed = 12;
-      if (diffX > transitionSpeed) diffX = transitionSpeed;
-      if (diffX < -transitionSpeed) diffX = -transitionSpeed;
-      if (diffY > transitionSpeed) diffY = transitionSpeed;
-      if (diffY < -transitionSpeed) diffY = -transitionSpeed;
-      this.cursor[0] += diffX;
-      this.cursor[1] += diffY;
+      this.mx = this.game.input.mx;
+      this.my = this.game.input.my;
     }
+
+    this.game.network.add('dx', this.dx);
+    this.game.network.add('mx', Math.floor(this.game.input.mx / this.game.WIDTH * 1000) / 1000);
+    this.game.network.add('my', Math.floor(this.game.input.my / this.game.HEIGHT * 1000) / 1000);
   }
 
   render(gl) {

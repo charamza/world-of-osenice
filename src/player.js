@@ -6,6 +6,9 @@ class Player extends Entity {
     this.px = px;
     this.py = y;
 
+    this.mx = game.WIDTH / 2;
+    this.my = game.HEIGHT / 2;
+
     this.eyeRot = 0;
     this.steps = 0;
 
@@ -19,6 +22,8 @@ class Player extends Entity {
     this.collidingTeleport = null;
     this.collidingTeleportSteps = -200;
     this.teleportingSteps = -1;
+
+    this.name = "";
 
     this.controlled = true;
     this.cursor = [game.WIDTH / 2, game.HEIGHT / 2];
@@ -39,8 +44,8 @@ class Player extends Entity {
       this.dx = 0;
       this.legRot = 0;
 
-      this.cursor[0] = game.WIDTH / 2 + Math.sin(this.teleportingSteps * 5 * Math.PI / 180) * 200 * Math.cos(this.rot);
-      this.cursor[1] = game.HEIGHT / 2 + Math.cos(this.teleportingSteps * 5 * Math.PI / 180) * 200 * Math.sin(this.rot);
+      this.cursor[0] = this.game.WIDTH / 2 + Math.sin(this.teleportingSteps * 5 * Math.PI / 180) * 200 * Math.cos(this.rot);
+      this.cursor[1] = this.game.HEIGHT / 2 + Math.cos(this.teleportingSteps * 5 * Math.PI / 180) * 200 * Math.sin(this.rot);
       if (this.teleportingSteps % 72 >= 36) {
         this.hideEyes = true;
       }
@@ -76,7 +81,10 @@ class Player extends Entity {
     if (collY != null) {
       this.py += collY.overlapV.y;
       this.falling = 0;
-      if (this.controlled && this instanceof PlayerLocal && this.game.input.isKeyDown(32)) this.jump();
+      if (this.controlled && this instanceof PlayerLocal && this.game.input.isKeyDown(32)) {
+        this.jump();
+        this.game.network.add('jump', this.px);
+      }
       //if (this.teleportingSteps == -1) this.legRot = Math.atan2(collY.overlapN.x, collY.overlapN.y);
       this.standing = true;
     } else {
@@ -94,7 +102,6 @@ class Player extends Entity {
           if (this.game.input.isKeyDown(84) && this instanceof PlayerLocal) {
             this.teleportTrigger(centity);
           }
-          console.log('tep');
         } else {
           this.collidingTeleport = centity;
           this.collidingTeleportSteps = 0;
@@ -127,6 +134,23 @@ class Player extends Entity {
 
     this.legSpread = 8 - (Math.abs(diffX * Math.cos(this.rot)) + Math.abs(diffY * Math.sin(this.rot))) / 20;
     if (this.legSpread < 0) this.legSpread = 0;
+
+    var mmx = this.mx;
+    var mmy = this.my;
+    if (mmx > this.game.WIDTH / 2 + 200) mmx = this.game.WIDTH / 2 + 200;
+    if (mmx < this.game.WIDTH / 2 - 200) mmx = this.game.WIDTH / 2 - 200;
+    if (mmy > this.game.HEIGHT / 2 + 200) mmy = this.game.HEIGHT / 2 + 200;
+    if (mmy < this.game.HEIGHT / 2 - 200) mmy = this.game.HEIGHT / 2 - 200;
+    var diffX = mmx - this.cursor[0];
+    var diffY = mmy - this.cursor[1];
+    var diffAngle = Math.atan2(diffX, diffY);
+    var transitionSpeed = 12;
+    if (diffX > transitionSpeed) diffX = transitionSpeed;
+    if (diffX < -transitionSpeed) diffX = -transitionSpeed;
+    if (diffY > transitionSpeed) diffY = transitionSpeed;
+    if (diffY < -transitionSpeed) diffY = -transitionSpeed;
+    this.cursor[0] += diffX;
+    this.cursor[1] += diffY;
 
     if (this.dx == 0) this.steps = 0; else this.steps++;
   }
@@ -186,27 +210,27 @@ class Player extends Entity {
       gl.restore();
     }
 
-    //if (this.lastMessages.length > 0) {
-      gl.save();
-      //gl.rotate(this.rot);
-      gl.font = '20px sans-serif';
-      gl.textAlign="center";
-      for (var i = 0; i < this.lastMessages.length; i++) {
-        var lifetime = this.game.STEPS - this.lastMessages[i][1];
-        var opacity = (400 - lifetime) / 100;
-        gl.fillStyle = 'rgba(0, 0, 0, ' + opacity + ')';
-        gl.fillText(this.lastMessages[i][0], 0, -50 + (-20 * i));
-        if (lifetime > 400) {
-          this.lastMessages.splice(i, 1);
-          i--;
-        }
+    gl.save();
+    gl.font = '20px sans-serif';
+    gl.textAlign="center";
+    gl.fillStyle = '#000';
+    gl.fillText(this.name, 0, -30);
+    gl.font = '14px sans-serif';
+    for (var i = 0; i < this.lastMessages.length; i++) {
+      var lifetime = this.game.STEPS - this.lastMessages[i][1];
+      var opacity = (400 - lifetime) / 100;
+      gl.fillStyle = 'rgba(0, 0, 0, ' + opacity + ')';
+      gl.fillText(this.lastMessages[i][0], 0, -60 + (-20 * i));
+      if (lifetime > 400) {
+        this.lastMessages.splice(i, 1);
+        i--;
       }
-      gl.fillStyle = '#000';
-      if (this.collidingTeleport != null && this.teleportingSteps == -1 && this instanceof PlayerLocal) {
-        gl.fillText('Press \'T\' if you wanna teleport away...', 0, 60);
-      }
-      gl.restore();
-    //}
+    }
+    gl.fillStyle = '#000';
+    if (this.collidingTeleport != null && this.teleportingSteps == -1 && this instanceof PlayerLocal) {
+      gl.fillText('Press \'T\' if you wanna teleport away...', 0, 60);
+    }
+    gl.restore();
 
     gl.restore();
   }
@@ -230,6 +254,12 @@ class Player extends Entity {
 
   teleportTo(){
 
+  }
+
+  synchronize(data) {
+    super.synchronize(data);
+    if (data.mx !== undefined) this.mx = data.mx * this.game.WIDTH;
+    if (data.my !== undefined) this.my = data.my * this.game.HEIGHT;
   }
 
 }

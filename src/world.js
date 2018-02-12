@@ -21,7 +21,7 @@ class World {
     noise.seed(Math.random());
 
     for (var i = 0; i < iterations + 1; i++) {
-      noisemap[i] = noise.simplex2(i, 0) * 20;
+      noisemap[i] = 0;//noise.simplex2(i, 0) * 20;
     }
 
     for (var i = 0; i < iterations - 2; i++) {

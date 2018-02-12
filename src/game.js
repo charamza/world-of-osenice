@@ -11,19 +11,26 @@ class Game {
     this.chat = new Chat(this);
     this.input = new Input(this);
     this.camera = new Camera(this);
-    this.world = new World(this);
-    this.player = new PlayerLocal(this, 0, 860);
-
-    this.world.addEntity(new Teleport(this, -800, 0));
-    this.world.addEntity(new Player(this, -45, 860));
-
+    this.network = new Network(this);
     this.lastFrame = performance.now();
     this.STEPS = 0;
+    this.LOADED = false;
   }
 
-  start() {
+  start(name) {
+    this.network.connect();
+    this.network.socket.onopen = () => this.network.login(name);
+
     window.requestAnimationFrame(() => this.update());
     //this.resources.music.play();
+  }
+
+  load() {
+    this.world = new World(this);
+    this.player = new PlayerLocal(this, 0, 860);
+    this.world.addEntity(new Teleport(this, -800, 0));
+    this.world.addEntity(new Player(this, -45, 860));
+    this.LOADED = true;
   }
 
   onresize() {
@@ -34,11 +41,13 @@ class Game {
   update() {
     let delta = performance.now() - this.lastFrame;
     this.lastFrame = performance.now();
-    //console.log(delta);
 
-    this.world.update();
-    this.player.update();
-    this.camera.update(this.player);
+    if (this.LOADED) {
+      this.world.update();
+      this.player.update();
+      this.camera.update(this.player);
+      this.network.update();
+    }
 
     this.STEPS++;
     this.render();
@@ -46,13 +55,29 @@ class Game {
 
   render() {
     this.gl.clearRect(0, 0, this.WIDTH, this.HEIGHT);
-    this.world.render(this.gl);
-    this.player.render(this.gl);
-    this.world.postrender(this.gl);
+
+    if (this.LOADED) {
+      this.world.render(this.gl);
+      this.player.render(this.gl);
+      this.world.postrender(this.gl);
+    }
+
     window.requestAnimationFrame(() => this.update());
   }
 
 }
 
-var game = new Game();
-game.start();
+
+document.querySelector('.osenice-login-text').focus();
+document.querySelector('.osenice-login-button').onclick = document.querySelector('.osenice-login-text').onkeypress = (e) => {
+  if (e instanceof KeyboardEvent && e.keyCode != 13) return;
+  var name = document.querySelector('.osenice-login-text').value;
+  if (name.length >= 3 && name.length <= 20) {
+    document.querySelector('.osenice-chat').style = "";
+    document.querySelector('.osenice-login').remove();
+    var game = new Game();
+    game.start(name);
+  } else {
+    alert("Jméno musí být dlouhé alespoň 3 znaky a maximálně 20 znaků.");
+  }
+};

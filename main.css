@@ -4,6 +4,88 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background: #fff;
+}
+
+.osenice-login {
+  width: 360px;
+  height: 250px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background: green;
+  text-align: center;
+  z-index: 1000;
+  background: #000;
+  box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.3);
+}
+.osenice-login-logo {
+	font-size: 36px;
+	text-align: center;
+	font-family: 'Josefin Sans', sans-serif;
+	margin-top: 26px;
+  color: #fff;
+}
+.osenice-login-text {
+	width: 80%;
+	box-sizing: border-box;
+	margin-top: 64px;
+  border: 0px;
+	border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+	padding: 6px 12px;
+  background: transparent;
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+	font-family: 'Josefin Sans', sans-serif;
+  transition: border-color 0.6s;
+}
+.osenice-login-text:focus {
+  border-color: #fff;
+}
+.osenice-login-text::-webkit-input-placeholder {
+  color: #fff;
+  opacity: 0.5;
+}
+.osenice-login-text::-moz-placeholder {
+  color: #fff;
+  opacity: 0.5;
+}
+.osenice-login-text:-ms-input-placeholder {
+  color: #fff;
+  opacity: 0.5;
+}
+.osenice-login-text:-moz-placeholder {
+  color: #fff;
+  opacity: 0.5;
+}
+
+.osenice-login-button {
+	position: absolute;
+	margin: auto;
+	display: inline-block;
+	left: 0;
+	right: 0;
+	bottom: 20px;
+	border: 2px solid #fff;
+	border-radius: 5px;
+	padding: 6px 20px;
+	color: #fff;
+	font-weight: bold;
+	cursor: pointer;
+	background: transparent;
+  transition: box-shadow 0.6s, transform 0.6s;
+}
+.osenice-login-button:hover {
+  box-shadow: 0 2px 8px -1px rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+}
+.osenice-login-button:active {
+  box-shadow: none;
+  transform: translateY(2px);
 }
 
 .osenice-chat {
