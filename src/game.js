@@ -28,8 +28,8 @@ class Game {
   load() {
     this.world = new World(this);
     this.player = new PlayerLocal(this, 0, 860);
-    this.world.addEntity(new Teleport(this, -800, 0));
-    this.world.addEntity(new Player(this, -45, 860));
+    //this.world.addEntity(new Teleport(this, -800, 0));
+    //this.world.addEntity(new Player(this, -45, 860));
     this.LOADED = true;
   }
 

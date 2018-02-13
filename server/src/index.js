@@ -31,7 +31,7 @@ setInterval(() => {
     if (data != null) {
       data = JSON.stringify(data);
       server.entities.forEach((player) => {
-        if (player instanceof Player) {
+        if (player instanceof Player && player.loggedIn) {
           player.sendUpdate(data);
         }
       });

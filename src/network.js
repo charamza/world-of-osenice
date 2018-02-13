@@ -58,7 +58,6 @@ class Network {
   receive(e) {
     var data = JSON.parse(e.data);
     var state = data.state;
-    console.log(e.data);
 
     switch(state) {
       case 'login':
@@ -77,10 +76,12 @@ class Network {
             if (id == this.pid) {
               this.game.player.synchronize(entityData);
             } else if (typeof this.entities[id] === 'undefined') {
-              var entity = new Player(this.game, entityData.px, entityData.py);
-              entity.synchronize(entityData);
-              this.entities[id] = entity;
-              this.game.world.entities.push(entity);
+              if (this.game.LOADED) {
+                var entity = new Player(this.game, entityData.px, entityData.py);
+                entity.synchronize(entityData);
+                this.entities[id] = entity;
+                this.game.world.entities.push(entity);
+              }
             } else {
               this.entities[id].synchronize(entityData);
             }

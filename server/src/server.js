@@ -11,7 +11,6 @@ class GameServer {
     this.ai = 0;
 
     this.world = new World(this, 'one');
-    this.world.load();
 
     this.size = 800;
 

@@ -260,6 +260,15 @@ class Player extends Entity {
     super.synchronize(data);
     if (data.mx !== undefined) this.mx = data.mx * this.game.WIDTH;
     if (data.my !== undefined) this.my = data.my * this.game.HEIGHT;
+    if (data.jump !== undefined) this.jump();
+    if (data.message !== undefined) {
+      var message = data.message;
+      this.game.chat.addMessage(this.name, message);
+      this.lastMessages.unshift([message, this.game.STEPS]);
+    }
+    if (data.name !== undefined) {
+      this.name = data.name;
+    }
   }
 
 }
