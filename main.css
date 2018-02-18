@@ -77,7 +77,8 @@ html, body {
 	font-weight: bold;
 	cursor: pointer;
 	background: transparent;
-  transition: box-shadow 0.6s, transform 0.6s;
+	transition: box-shadow 0.6s, transform 0.6s;
+	width: 80px;
 }
 .osenice-login-button:hover {
   box-shadow: 0 2px 8px -1px rgba(255, 255, 255, 0.8);

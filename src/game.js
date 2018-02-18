@@ -54,7 +54,8 @@ class Game {
   }
 
   render() {
-    this.gl.clearRect(0, 0, this.WIDTH, this.HEIGHT);
+	this.gl.fillStyle='#fff';
+	this.gl.fillRect(0, 0, this.WIDTH, this.HEIGHT);
 
     if (this.LOADED) {
       this.world.render(this.gl);
