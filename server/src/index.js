@@ -13,7 +13,10 @@ var server = new GameServer();
 wss.on('connection', (socket) => {
   var player = new Player(server, socket);
   server.addEntity(player);
-
+  
+  socket.on('error', (e) => {
+    console.log(server.getConsolePrefix() + 'Vyskytla se chyba :(');
+  });
   socket.on('close', (data) => {
     server.removeEntity(player);
     console.log(server.getConsolePrefix() + 'Odpojil se uživatel "' + player.name + '" (' + server.entities.length + ')');
