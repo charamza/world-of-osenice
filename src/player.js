@@ -83,16 +83,14 @@ class Player extends Entity {
       this.falling = 0;
       if (this.controlled && this instanceof PlayerLocal && this.game.input.isKeyDown(32)) {
         this.jump();
-        this.game.network.add('jump', this.px);
+        this.game.network.add('jump', this.px, true);
       }
-      //if (this.teleportingSteps == -1) this.legRot = Math.atan2(collY.overlapN.x, collY.overlapN.y);
       this.standing = true;
     } else {
       this.py += my;
       this.standing = false;
     }
 
-    //this.polygon.setAngle(this.rot);
     var collE = this.game.world.collisionEntities(this);
     var collidesWithTeleport = false;
     for (var centity of collE) {
