@@ -9,9 +9,11 @@ var SAT = require('sat');
 
 class World {
 
-  constructor(server, name){
+  constructor(server, filename){
     this.server = server;
-    this.name = name;
+    this.filename = filename;
+    this.name = '';
+    this.radius = 0;
 
     this.setup();
   }
@@ -20,58 +22,27 @@ class World {
     this.platforms = [];
     this.entities = [];
 
-    var iterations = 80;
-    var gap = 360 / iterations;
-    var distance = 800;
-    var cx = 0;
-    var cy = 0;
+    var data = JSON.parse(fs.readFileSync( __dirname + '/../../worlds/' + this.filename + '.json'));
 
-    var noisemap = [];
-    //noise.seed(Math.random());
+    this.radius = data['tilewidth'];
+    this.name = data['layers'][0]['name'];
+    var points = data['layers'][0]['objects'];
 
-    for (var i = 0; i < iterations + 1; i++) {
-      noisemap[i] = 0;//noise.simplex2(i, 0) * 20;
+    for (var i = 0; i < points.length; i++) {
+      var rot = (points[i].rotation != undefined ? points[i].rotation * Math.PI / 180 : 0);
+      var x1 = points[i].polyline[0]['x'] * Math.cos(rot) + points[i].polyline[0]['y'] * Math.sin(rot) - this.radius + points[i].x;
+      var y1 = points[i].polyline[0]['y'] * Math.cos(rot) + points[i].polyline[0]['x'] * Math.sin(rot) - this.radius + points[i].y;
+      var x2 = points[i].polyline[1]['x'] * Math.cos(rot) + points[i].polyline[1]['y'] * Math.sin(rot) - this.radius + points[i].x;
+      var y2 = points[i].polyline[1]['y'] * Math.cos(rot) + points[i].polyline[1]['x'] * Math.sin(rot) - this.radius + points[i].y;
+
+      var platform = new Platform(x1, y1, x2, y2);
+
+      if (points[i].properties != undefined) {
+        if (points[i].properties.climbable != undefined) platform.climbable = points[i].properties.climbable;
+      }
+
+      this.platforms.push(platform);
     }
-
-    for (var i = 0; i < iterations - 2; i++) {
-      var a1 = i * gap * Math.PI / 180;
-      var a2 = (i + 1) * gap * Math.PI / 180;
-      var x1 = Math.sin(a1) * (distance + noisemap[i]) + cx;
-      var y1 = Math.cos(a1) * (distance + noisemap[i]) + cy;
-      var x2 = Math.sin(a2) * (distance + noisemap[i + 1]) + cx;
-      var y2 = Math.cos(a2) * (distance + noisemap[i + 1]) + cy;
-      this.platforms.push(new Platform(x1, y1, x2, y2));
-    }
-    this.platforms.push(new Platform(
-      Math.sin(78 * gap * Math.PI / 180) * (distance + noisemap[78]),
-      Math.cos(78 * gap * Math.PI / 180) * (distance + noisemap[78]),
-      Math.sin(78 * gap * Math.PI / 180) * (distance + noisemap[78]) / 6 * 5,
-      Math.cos(78 * gap * Math.PI / 180) * (distance + noisemap[78]) / 6 * 5
-    ).nonclimbable());
-    this.platforms.push(new Platform(
-      Math.sin(80 * gap * Math.PI / 180) * (distance + noisemap[0]),
-      Math.cos(80 * gap * Math.PI / 180) * (distance + noisemap[0]),
-      Math.sin(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 4,
-      Math.cos(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 4
-    ).nonclimbable());
-    this.platforms.push(new Platform(
-      Math.sin(78 * gap * Math.PI / 180) * (distance + noisemap[78]) / 6 * 5,
-      Math.cos(78 * gap * Math.PI / 180) * (distance + noisemap[78]) / 6 * 5,
-      Math.sin(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 5,
-      Math.cos(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 5
-    ));
-    this.platforms.push(new Platform(
-      Math.sin(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 4,
-      Math.cos(80 * gap * Math.PI / 180) * (distance + noisemap[0]) / 6 * 4,
-      Math.sin(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 4,
-      Math.cos(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 4
-    ));
-    this.platforms.push(new Platform(
-      Math.sin(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 5,
-      Math.cos(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 5,
-      Math.sin(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 4,
-      Math.cos(70 * gap * Math.PI / 180) * (distance + noisemap[70]) / 6 * 4
-    ));
   }
 
   update() {

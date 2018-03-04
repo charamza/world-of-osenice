@@ -59,14 +59,20 @@ class Network {
     var data = JSON.parse(e.data);
     var state = data.state;
 
+    //console.log(data);
+
     switch(state) {
       case 'login':
-        this.game.chat.addMessage('MOTD', data.motd);
-        this.game.load();
-        this.pid = data.id;
-        this.game.player.px = data.px;
-        this.game.player.py = data.py;
-        this.game.player.name = data.name;
+        var worldname = data.world;
+        this.game.load(worldname, (player, firstTime) => {
+          if (firstTime) this.game.chat.addMessage('MOTD', data.motd);
+          this.pid = data.id;
+          player.px = data.px;
+          player.py = data.py;
+          player.name = data.name;
+          player.teleportingSteps = -1;
+        });
+        console.log(data);
         break;
       case 'update':
         var entities = data.e;

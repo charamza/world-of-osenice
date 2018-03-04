@@ -25,12 +25,21 @@ class Game {
     //this.resources.music.play();
   }
 
-  load() {
-    this.world = new World(this);
-    this.player = new PlayerLocal(this, 0, 860);
-    //this.world.addEntity(new Teleport(this, -800, 0));
-    //this.world.addEntity(new Player(this, -45, 860));
-    this.LOADED = true;
+  load(worldname, callback) {
+    this.world = new World(this, worldname);
+    this.world.setup(() => {
+      var firstTime = false;
+      if (typeof this.player === 'undefined') {
+        this.player = new PlayerLocal(this, 0, 860);
+        firstTime = true;
+      }
+      this.LOADED = true;
+      callback(this.player, firstTime);
+    });
+  }
+
+  unloadWorld() {
+    this.LOADED = false;
   }
 
   onresize() {

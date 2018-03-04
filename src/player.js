@@ -21,6 +21,7 @@ class Player extends Entity {
     this.lastMessages = [];
     this.collidingTeleport = null;
     this.collidingTeleportSteps = -200;
+    this.teleportLocation = '';
     this.teleportingSteps = -1;
 
     this.name = "";
@@ -59,7 +60,7 @@ class Player extends Entity {
     var vFalling = this.falling / 100;
     var colliding = false;
 
-    var mx = this.dx * 0.5;
+    var mx = this.dx * 400 / this.game.world.radius;
     var my = -vFalling;
 
     this.polygon.setAngle(0);
@@ -79,8 +80,16 @@ class Player extends Entity {
     }
 
     if (collY != null) {
-      this.py += collY.overlapV.y;
-      this.falling = 0;
+      if (collY.climbable) {
+        this.py += collY.overlapV.y;
+        this.falling = 0;
+      }
+      if (collY.climbable && this.teleportingSteps == -1) {
+        var legRot = Math.atan2(collY.overlapN.x, collY.overlapN.y);
+        if (Math.abs(legRot) < Math.PI / 4) {
+          this.legRot = legRot;
+        }
+      }
       if (this.controlled && this instanceof PlayerLocal && this.game.input.isKeyDown(32)) {
         this.jump();
         this.game.network.add('jump', this.px, true);
@@ -99,6 +108,7 @@ class Player extends Entity {
         if (this.collidingTeleport == centity) {
           if (this.game.input.isKeyDown(84) && this instanceof PlayerLocal) {
             this.teleportTrigger(centity);
+            this.teleportLocation = centity.worldname;
           }
         } else {
           this.collidingTeleport = centity;
@@ -226,7 +236,7 @@ class Player extends Entity {
     }
     gl.fillStyle = '#000';
     if (this.collidingTeleport != null && this.teleportingSteps == -1 && this instanceof PlayerLocal) {
-      gl.fillText('Press \'T\' if you wanna teleport away...', 0, 60);
+      gl.fillText('Stisknutím klávesy \'T\' se přeneseš do jiného světa...', 0, 60);
     }
     gl.restore();
 
@@ -250,7 +260,7 @@ class Player extends Entity {
     this.teleportingSteps = 0;
   }
 
-  teleportTo(){
+  teleportTo(world){
 
   }
 

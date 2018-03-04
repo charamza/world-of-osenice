@@ -10,7 +10,10 @@ class GameServer {
     this.entities = [];
     this.ai = 0;
 
-    this.world = new World(this, 'one');
+    this.worlds = {
+      roumen: new World(this, 'roumen'),
+      forest: new World(this, 'forest')
+    };
 
     this.size = 800;
 
@@ -47,6 +50,7 @@ class GameServer {
       state: 'login',
       motd: 'Vítej ve hře!',
       name: player.name,
+      world: player.world.filename,
       id: player.id,
       px: player.px,
       py: player.py,

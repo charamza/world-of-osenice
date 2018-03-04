@@ -5,8 +5,8 @@ var SAT = require('sat');
 
 class Player extends Entity {
 
-  constructor(server, socket) {
-    super(server, 'p', 32, 32);
+  constructor(server, world, socket) {
+    super(server, world, 'p', 32, 32);
     this.socket = socket;
     this.activity = new Date().getTime();
 
@@ -35,14 +35,14 @@ class Player extends Entity {
     var vFalling = this.falling / 100;
     var colliding = false;
 
-    var mx = this.dx * 0.5;
+    var mx = this.dx * 400 / this.world.radius;
     var my = -vFalling;
 
     this.polygon.setAngle(0);
     this.polygon.setOffset(new SAT.Vector(0, - this.py - 10));
-    var collX = this.server.world.collision(this.polygon, -(this.px + mx - 1.4) * Math.PI / 180);
+    var collX = this.world.collision(this.polygon, -(this.px + mx - 1.4) * Math.PI / 180);
     this.polygon.setOffset(new SAT.Vector(0, - this.py - my - 7));
-    var collY = this.server.world.collision(this.polygon, -(this.px - 1.4) * Math.PI / 180);
+    var collY = this.world.collision(this.polygon, -(this.px - 1.4) * Math.PI / 180);
     if (collX != null) {
       if (collX.climbable && this.falling >= 0) {
         this.py += collX.overlapV.y;
@@ -52,37 +52,20 @@ class Player extends Entity {
     }
 
     if (collY != null) {
-      this.py += collY.overlapV.y;
-      this.falling = 0;
-      //if (this.controlled && this instanceof PlayerLocal && this.server.input.isKeyDown(32)) {
-        //this.jump();
-        //this.server.network.add('jump', this.px);
-      //}
-      //if (this.teleportingSteps == -1) this.legRot = Math.atan2(collY.overlapN.x, collY.overlapN.y);
-      this.standing = true;
+      if (collY.climbable) {
+        this.py += collY.overlapV.y;
+        this.falling = 0;
+        this.standing = true;
+      } else {
+        if (this.falling > 0) {
+          this.px -= collY.overlapV.x;
+        } else {
+          this.falling = 0;
+        }
+      }
     } else {
       this.py += my;
       this.standing = false;
-    }
-
-    //this.polygon.setAngle(this.rot);
-    var collE = this.server.world.collisionEntities(this);
-    var collidesWithTeleport = false;
-    for (var centity of collE) {
-      if (centity instanceof Teleport) {
-        collidesWithTeleport = true;
-        if (this.collidingTeleport == centity) {
-          //if (this.server.input.isKeyDown(84) && this instanceof PlayerLocal) {
-            //this.teleportTrigger(centity);
-          //}
-        } else {
-          this.collidingTeleport = centity;
-          this.collidingTeleportSteps = 0;
-        }
-      }
-    }
-    if (!collidesWithTeleport) {
-      this.collidingTeleport = null;
     }
   }
 
@@ -121,6 +104,12 @@ class Player extends Entity {
           var message = data['message'];
           console.log(this.server.getConsolePrefix() + this.name + ': ' + message);
           this.onetime['message'] = message;
+        }
+        if (data['world'] !== undefined) {
+          var newworld = this.server.worlds[data['world']];
+          if (newworld === undefined) return;
+          this.changeWorld(newworld);
+          this.sendUpdate(JSON.stringify(this.server.loginData(this)));
         }
       }
     } catch (e) {

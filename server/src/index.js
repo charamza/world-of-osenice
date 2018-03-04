@@ -11,9 +11,9 @@ var wss = new WebSocket.Server({ port: 6060 });
 var server = new GameServer();
 
 wss.on('connection', (socket) => {
-  var player = new Player(server, socket);
+  var player = new Player(server, server.worlds.roumen, socket);
   server.addEntity(player);
-  
+
   socket.on('error', (e) => {
     console.log(server.getConsolePrefix() + 'Vyskytla se chyba :(');
   });
@@ -27,7 +27,9 @@ setInterval(() => {
   server.entities.forEach((entity) => {
     if (entity.update) entity.update();
   });
-  server.world.update();
+  Object.keys(server.worlds).forEach((key) => {
+    server.worlds[key].update();
+  });
 
   if (server.STEPS % 2 == 0) {
     var data = server.updateData();

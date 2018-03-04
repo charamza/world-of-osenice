@@ -1,18 +1,19 @@
 class Teleport extends Entity{
 
-  constructor(game, x, y) {
+  constructor(game, x, y, worldname) {
     super(game, x, y, 30, 40);
+
+    this.worldname = worldname;
   }
 
   update() {
-    super.update();
+    this.rot = Math.atan2(-this.getX(), this.getY());
   }
 
   postrender(gl) {
     super.render(gl);
 
     gl.save();
-    //this.game.camera.translate(gl);
     gl.translate(this.getX(), this.getY());
     gl.rotate(this.rot);
     gl.scale(2, 1);

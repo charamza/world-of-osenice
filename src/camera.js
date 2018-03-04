@@ -17,4 +17,8 @@ class Camera {
     gl.translate(this.x, this.y);
   }
 
+  getScreenBounds() {
+    return {x1: -this.x, y1: -this.y, x2: -this.x + this.game.WIDTH, y2: -this.y + this.game.HEIGHT};
+  }
+
 }

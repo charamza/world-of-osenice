@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Generátor světů</title>
+	</head>
+	<body>
+		<div id="settings">
+
+		</div>
+		<pre id="code">
+
+		</pre>
+		<script>
+			var code = document.getElementById("code");
+			var data = [];
+
+			var gap = 360 / 72;
+			var length = 360 / gap;
+			var size = 1600;
+
+			for (var i = 0; i < length; i++) {
+				var deg = i * gap * Math.PI / 180;
+				var x = round((Math.cos(deg) + 1) * size);
+				var y = round((Math.sin(deg) + 1) * size);
+				data.push({x: x, y: y});
+			}
+
+			code.textContent = wrapper(data).replace(/\n\t\t\t\t/g, "\n");
+
+
+			function round(val) {
+				var digits = 3;
+				return Math.floor(val * Math.pow(10, digits)) / Math.pow(10, digits);
+			}
+
+			function wrapper(points) {
+				var orderdata = "[\n\t";
+				var ids = 1;
+
+				for (var i = 0; i < points.length; i++) {
+					var ps1 = points[i];
+					var ps2 = (i + 1 == points.length ? points[0] : points[i + 1]);
+					var html = '\t{\n\
+						 "height":0,\n\
+						 "id":' + (ids++) + ',\n\
+						 "name":"",\n\
+						 "polyline":' + JSON.stringify([ps1, ps2]).replace(/},/g, "},\n\t\t\t").replace(/\[/, "[\n\t\t\t").replace(/\]/, "\n\t\t ]") + ',\n\
+						 "rotation":0,\n\
+						 "type":"",\n\
+						 "visible":true,\n\
+						 "width":0,\n\
+						 "x":0,\n\
+						 "y":0\n\
+						}';
+					orderdata += html + (i + 1 != points.length ? ',\n\t' : '');
+				}
+
+				orderdata += "\n\t ]";
+
+				var json = '{\n\
+				 "type":"map",\n\
+				 "version":1,\n\
+				 "width":2,\n\
+				 "height":2,\n\
+				 "infinite":false,\n\
+				 "tileheight":' + size + ',\n\
+				 "tilewidth":' + size + ',\n\
+				 "layers":[{\n\
+					 "color":"#00ff00",\n\
+					 "draworder":"topdown",\n\
+					 "name":"World",\n\
+					 "objects":' + orderdata + ',\n\
+					 "opacity":1,\n\
+					 "type":"objectgroup",\n\
+					 "visible":true,\n\
+					 "x":0,\n\
+					 "y":0\n\
+				 }],\n\
+				 "nextobjectid":1,\n\
+				 "orientation":"orthogonal",\n\
+				 "renderorder":"right-down"\n\
+				}\n\
+				';
+				return json;
+			}
+		</script>
+	</body>
+</html>

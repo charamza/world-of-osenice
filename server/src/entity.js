@@ -5,11 +5,12 @@ var SAT = require('sat');
 
 class Entity {
 
-  constructor(server, type, width, height){
+  constructor(server, world, type, width, height){
     this.server = server;
+    this.world = world;
 
     this.px = 0;
-    this.py = server.size + 200;
+    this.py = world.radius + 200;
 
     this.dx = 0;
 
@@ -63,6 +64,14 @@ class Entity {
 
   updateBoundsPolygon() {
     this.polygonBounds.setOffset(new SAT.Vector(this.getX(), this.getY()));
+  }
+
+  changeWorld(world) {
+    this.world.removeEntity(this);
+    this.world = world;
+    this.world.addEntity(this);
+    this.px = 0;
+    this.py = this.world.radius + 400;
   }
 
 

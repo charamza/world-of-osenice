@@ -54,6 +54,7 @@ class Chat {
     var textnode = document.createTextNode(name + ': ' + message);
     node.appendChild(textnode);
     this.chatMessages.appendChild(node);
+    this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
   }
 
 }
