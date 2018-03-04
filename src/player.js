@@ -166,13 +166,15 @@ class Player extends Entity {
   render(gl) {
     super.render(gl);
 
+    gl.save();
+
     var backToNormal = 1;
     if (this.teleportingSteps > 300) {
       backToNormal = (200 - (this.teleportingSteps - 300)) / 200;
       if (backToNormal < 0) backToNormal = 0;
+      if (!(this instanceof PlayerLocal)) gl.globalAlpha = 0.0;
     }
 
-    gl.save();
     if (this instanceof PlayerLocal) this.game.camera.translate(gl);
     var mx = this.getX();
     var my = this.getY();
@@ -258,6 +260,7 @@ class Player extends Entity {
   teleportTrigger(teleentity) {
     if (this.teleportingSteps != -1) return;
     this.teleportingSteps = 0;
+    this.game.network.add('world', 'prepare', true);
   }
 
   teleportTo(world){
@@ -266,8 +269,8 @@ class Player extends Entity {
 
   synchronize(data) {
     super.synchronize(data);
-    if (data.mx !== undefined) this.mx = data.mx * this.game.WIDTH;
-    if (data.my !== undefined) this.my = data.my * this.game.HEIGHT;
+    if (data.mx !== undefined) this.mx = (data.mx / 100) * this.game.WIDTH;
+    if (data.my !== undefined) this.my = (data.my / 100) * this.game.HEIGHT;
     if (data.jump !== undefined) this.jump();
     if (data.message !== undefined) {
       var message = data.message;
@@ -276,6 +279,9 @@ class Player extends Entity {
     }
     if (data.name !== undefined) {
       this.name = data.name;
+    }
+    if (!(this instanceof PlayerLocal) && data.tp !== undefined) {
+      if (data.tp) this.teleportingSteps = 0;
     }
   }
 

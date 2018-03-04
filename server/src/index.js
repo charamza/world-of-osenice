@@ -31,16 +31,16 @@ setInterval(() => {
     server.worlds[key].update();
   });
 
-  if (server.STEPS % 2 == 0) {
-    var data = server.updateData();
-    if (data != null) {
-      data = JSON.stringify(data);
-      server.entities.forEach((player) => {
-        if (player instanceof Player && player.loggedIn) {
-          player.sendUpdate(data);
-        }
-      });
-    }
+  if (server.STEPS % 3 == 0) {
+    server.entities.forEach((player) => {
+      var data = JSON.stringify(player.world.getShortData(player));
+      if (player instanceof Player && player.loggedIn) {
+        player.sendUpdate(data);
+      }
+    });
+    server.entities.forEach((player) => {
+      player.onetime = {};
+    });
   }
 
   server.STEPS++;

@@ -26,7 +26,7 @@ class Network {
 
   login(name) {
     var data = {
-      state: 'login',
+      s: 'l',
       name: name
     };
     this.send(data);
@@ -38,7 +38,7 @@ class Network {
     if (force || this.updateDataCache[key] != value) {
       if (this.updateData == null) {
         this.updateData = {
-          state: 'update',
+          s: 'u',
         };
       }
       this.updateData[key] = value;
@@ -57,12 +57,12 @@ class Network {
 
   receive(e) {
     var data = JSON.parse(e.data);
-    var state = data.state;
+    var state = data.s;
 
     //console.log(data);
 
     switch(state) {
-      case 'login':
+      case 'l': // Login
         var worldname = data.world;
         this.game.load(worldname, (player, firstTime) => {
           if (firstTime) this.game.chat.addMessage('MOTD', data.motd);
@@ -74,7 +74,7 @@ class Network {
         });
         console.log(data);
         break;
-      case 'update':
+      case 'u': // Update
         var entities = data.e;
         for (var id in entities) {
           if (entities.hasOwnProperty(id)) {

@@ -28,10 +28,12 @@ class GameServer {
 
   addEntity(entity){
     this.entities.push(entity);
+    entity.world.addEntity(entity);
   }
 
   removeEntity(entity){
     this.entities.splice(this.entities.indexOf(entity), 1);
+    entity.world.removeEntity(entity);
   }
 
   getEntity(id) {
@@ -47,7 +49,7 @@ class GameServer {
 
   loginData(player){
     var data = {
-      state: 'login',
+      s: 'l',
       motd: 'Vítej ve hře!',
       name: player.name,
       world: player.world.filename,
@@ -62,7 +64,7 @@ class GameServer {
   updateData(){
     var timestamp = new Date().getTime();
     var data = {
-      state: 'update',
+      s: 'u',
       t: timestamp,
       e: {}
     };

@@ -17,8 +17,8 @@ class PlayerLocal extends Player {
     }
 
     this.game.network.add('dx', this.dx);
-    this.game.network.add('mx', Math.floor(this.game.input.mx / this.game.WIDTH * 1000) / 1000);
-    this.game.network.add('my', Math.floor(this.game.input.my / this.game.HEIGHT * 1000) / 1000);
+    this.game.network.add('mx', Math.floor(this.game.input.mx / this.game.WIDTH * 100));
+    this.game.network.add('my', Math.floor(this.game.input.my / this.game.HEIGHT * 100));
   }
 
   render(gl) {

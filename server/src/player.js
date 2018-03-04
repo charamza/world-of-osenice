@@ -20,7 +20,13 @@ class Player extends Entity {
 
     this.standing = false;
     this.falling = 0;
-    this.color = 'rgba(255, 0, 0)';
+    this.color = '#ff0000';
+    this.teleporting = false;
+
+    this.lastUpdatePacket = {
+      s: 'u',
+      e: {}
+    };
 
     socket.on('message', (data) => this.receive(data));
   }
@@ -74,6 +80,7 @@ class Player extends Entity {
     data.name = this.name;
     data.mx = this.mx;
     data.my = this.my;
+    data.tp = this.teleporting;
     return data;
   }
 
@@ -85,14 +92,15 @@ class Player extends Entity {
 
       this.activity = now;
 
-      if (data['state'] == 'login') {
+      if (data['s'] == 'l') {
         this.name = data['name'];
+        if (data['color'] !== undefined) this.color = data['color'];
         var loginMessage = this.server.loginData(this);
         this.socket.send(JSON.stringify(loginMessage));
         this.loggedIn = true;
         console.log(this.server.getConsolePrefix() + 'Připojil se uživatel "' + this.name + '" (' + this.server.entities.length + ')');
       }
-      if (data['state'] == 'update') {
+      if (data['s'] == 'u') {
         this.updateVariable('dx', data);
         this.updateVariable('mx', data);
         this.updateVariable('my', data);
@@ -106,10 +114,15 @@ class Player extends Entity {
           this.onetime['message'] = message;
         }
         if (data['world'] !== undefined) {
-          var newworld = this.server.worlds[data['world']];
-          if (newworld === undefined) return;
-          this.changeWorld(newworld);
-          this.sendUpdate(JSON.stringify(this.server.loginData(this)));
+          if (data['world'] == 'prepare') {
+            this.teleporting = true;
+          } else {
+            var newworld = this.server.worlds[data['world']];
+            if (newworld === undefined) return;
+            this.changeWorld(newworld);
+            this.sendUpdate(JSON.stringify(this.server.loginData(this)));
+            this.teleporting = false;
+          }
         }
       }
     } catch (e) {

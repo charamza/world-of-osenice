@@ -40,7 +40,6 @@ class Entity {
       py: this.py,
       dx: this.dx
     }, this.onetime);
-    this.onetime = {};
     return data;
   }
 

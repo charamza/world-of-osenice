@@ -83,6 +83,58 @@ class World {
     this.entities.splice(index, 1);
   }
 
+  getData(player) {
+    var data = {
+      s: 'u',
+      e: {}
+    };
+
+    var length = 0;
+
+    this.entities.forEach((entity) => {
+      var entityData = entity.getData();
+      if (entityData != null) {
+        data.e[entity.id] = entityData;
+        length++;
+      }
+    });
+
+    return data;
+  }
+
+  getShortData(player) {
+    var dataNew = this.getData(player);
+    var dataOld = player.lastUpdatePacket;
+    var data = {
+      s: 'u',
+      e: {}
+    };
+
+    Object.keys(dataOld.e).forEach((id) => {
+      if (dataNew.e[id] === undefined) delete player.lastUpdatePacket.e[id];
+    });
+
+    Object.keys(dataNew.e).forEach((id) => {
+      var entityNew = dataNew.e[id];
+      var entityOld = dataOld.e[id];
+      if (entityOld === undefined) {
+        data.e[id] = player.lastUpdatePacket.e[id] = entityNew;
+      } else {
+        data.e[id] = {};
+        Object.keys(entityNew).forEach((attr) => {
+          var value = entityNew[attr];
+          if (value instanceof Number) value = (value * 1000).toFixed() / 1000;
+          if (attr == 'px') value = Math.floor(value);
+          if (attr == 'py') value = Math.floor(value * 100) / 100;
+          if (attr != 'jump' && attr != 'message' && entityOld[attr] == value) return;
+          data.e[id][attr] = player.lastUpdatePacket.e[id][attr] = value;
+        });
+      }
+    });
+
+    return data;
+  }
+
 };
 
 module.exports = World;
