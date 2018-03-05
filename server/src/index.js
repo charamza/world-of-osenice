@@ -31,7 +31,7 @@ setInterval(() => {
     server.worlds[key].update();
   });
 
-  if (server.STEPS % 3 == 0) {
+  if (server.STEPS % 2 == 0) {
     server.entities.forEach((player) => {
       var data = JSON.stringify(player.world.getShortData(player));
       if (player instanceof Player && player.loggedIn) {

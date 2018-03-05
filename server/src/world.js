@@ -110,6 +110,8 @@ class World {
       e: {}
     };
 
+    var sync = this.server.STEPS % 30 == 0;
+
     Object.keys(dataOld.e).forEach((id) => {
       if (dataNew.e[id] === undefined) delete player.lastUpdatePacket.e[id];
     });
@@ -126,7 +128,7 @@ class World {
           if (value instanceof Number) value = (value * 1000).toFixed() / 1000;
           if (attr == 'px') value = Math.floor(value);
           if (attr == 'py') value = Math.floor(value * 100) / 100;
-          if (attr != 'jump' && attr != 'message' && entityOld[attr] == value) return;
+          if (!sync && (attr != 'jump' && attr != 'message' && entityOld[attr] == value)) return;
           data.e[id][attr] = player.lastUpdatePacket.e[id][attr] = value;
         });
       }

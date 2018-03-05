@@ -17,9 +17,9 @@ class Game {
     this.LOADED = false;
   }
 
-  start(name) {
+  start(name, color) {
     this.network.connect();
-    this.network.socket.onopen = () => this.network.login(name);
+    this.network.socket.onopen = () => this.network.login(name, color);
 
     window.requestAnimationFrame(() => this.update());
     //this.resources.music.play();
@@ -82,11 +82,12 @@ document.querySelector('.osenice-login-text').focus();
 document.querySelector('.osenice-login-button').onclick = document.querySelector('.osenice-login-text').onkeypress = (e) => {
   if (e instanceof KeyboardEvent && e.keyCode != 13) return;
   var name = document.querySelector('.osenice-login-text').value;
+  var color = document.querySelector('.osenice-login-color').value;
   if (name.length >= 3 && name.length <= 20) {
     document.querySelector('.osenice-chat').style = "";
     document.querySelector('.osenice-login').remove();
     var game = new Game();
-    game.start(name);
+    game.start(name, color);
   } else {
     alert("Jméno musí být dlouhé alespoň 3 znaky a maximálně 20 znaků.");
   }

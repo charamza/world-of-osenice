@@ -20,6 +20,7 @@ class Player extends Entity {
 
     this.standing = false;
     this.falling = 0;
+    this.legRot = 0;
     this.color = '#ff0000';
     this.teleporting = false;
 
@@ -45,28 +46,26 @@ class Player extends Entity {
     var my = -vFalling;
 
     this.polygon.setAngle(0);
-    this.polygon.setOffset(new SAT.Vector(0, - this.py - 10));
-    var collX = this.world.collision(this.polygon, -(this.px + mx - 1.4) * Math.PI / 180);
-    this.polygon.setOffset(new SAT.Vector(0, - this.py - my - 7));
-    var collY = this.world.collision(this.polygon, -(this.px - 1.4) * Math.PI / 180);
+    this.polygon.setOffset(new SAT.Vector(0, - this.py - 10 + this.height / 2));
+    var collX = this.world.collision(this.polygon, -(this.px + mx) * Math.PI / 180);
     if (collX != null) {
       if (collX.climbable && this.falling >= 0) {
-        this.py += collX.overlapV.y;
+        this.py += collX.overlapV.y + 2;
       }
     } else {
       this.px += mx;
     }
 
+    this.polygon.setOffset(new SAT.Vector(0, - this.py - my - 7 + this.height / 2));
+    var collY = this.world.collision(this.polygon, -(this.px) * Math.PI / 180);
     if (collY != null) {
       if (collY.climbable) {
         this.py += collY.overlapV.y;
         this.falling = 0;
         this.standing = true;
-      } else {
-        if (this.falling > 0) {
-          this.px -= collY.overlapV.x;
-        } else {
-          this.falling = 0;
+        var legRot = Math.atan2(collY.overlapN.x, collY.overlapN.y);
+        if (Math.abs(legRot) < Math.PI / 4) {
+          this.legRot = legRot;
         }
       }
     } else {
@@ -78,6 +77,7 @@ class Player extends Entity {
   getData() {
     var data = super.getData();
     data.name = this.name;
+    data.color = this.color;
     data.mx = this.mx;
     data.my = this.my;
     data.tp = this.teleporting;
@@ -94,7 +94,12 @@ class Player extends Entity {
 
       if (data['s'] == 'l') {
         this.name = data['name'];
-        if (data['color'] !== undefined) this.color = data['color'];
+        if (data['color'] !== undefined) {
+          var color = data['color'];
+          if (/(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color)) {
+            this.color = color;
+          }
+        }
         var loginMessage = this.server.loginData(this);
         this.socket.send(JSON.stringify(loginMessage));
         this.loggedIn = true;

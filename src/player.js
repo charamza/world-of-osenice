@@ -31,7 +31,7 @@ class Player extends Entity {
 
     this.standing = false;
     this.falling = 0;
-    this.color = 'rgb(255, 0, 0)';
+    this.color = '#f00';
   }
 
   update() {
@@ -64,13 +64,12 @@ class Player extends Entity {
     var my = -vFalling;
 
     this.polygon.setAngle(0);
-    this.polygon.setOffset(new SAT.Vector(0, - this.py - 10));
-    var collX = this.game.world.collision(this.polygon, -(this.px + mx - 1.4) * Math.PI / 180);
-    this.polygon.setOffset(new SAT.Vector(0, - this.py - my - 7));
-    var collY = this.game.world.collision(this.polygon, -(this.px - 1.4) * Math.PI / 180);
+
+    this.polygon.pos = new SAT.Vector(0, - this.py - 10 + this.height / 2);
+    var collX = this.game.world.collision(this.polygon, -(this.px + mx) * Math.PI / 180);
     if (collX != null) {
       if (collX.climbable && this.falling >= 0) {
-        this.py += collX.overlapV.y;
+        this.py += collX.overlapV.y + 2;
       }
     } else {
       this.px += mx;
@@ -79,6 +78,8 @@ class Player extends Entity {
       }
     }
 
+    this.polygon.pos = new SAT.Vector(0, - this.py - my - 7 + this.height / 2);
+    var collY = this.game.world.collision(this.polygon, -(this.px) * Math.PI / 180);
     if (collY != null) {
       if (collY.climbable) {
         this.py += collY.overlapV.y;
@@ -279,6 +280,9 @@ class Player extends Entity {
     }
     if (data.name !== undefined) {
       this.name = data.name;
+    }
+    if (data.color !== undefined) {
+      this.color = data.color;
     }
     if (!(this instanceof PlayerLocal) && data.tp !== undefined) {
       if (data.tp) this.teleportingSteps = 0;

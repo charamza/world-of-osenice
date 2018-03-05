@@ -10,7 +10,10 @@
     <canvas id="gamespace" width="640" height="480"></canvas>
     <div class="osenice-login">
       <div class="osenice-login-logo">World of Osenice</div>
-      <input class="osenice-login-text" type="text" placeholder="Your username" />
+      <div class="osenice-login-values">
+        <input class="osenice-login-text" type="text" placeholder="Your username" />
+        <input class="osenice-login-color" type="color" value="#f00" />
+      </div>
       <input class="osenice-login-button" type="button" value="Login" />
     </div>
     <div class="osenice-chat" style="display: none;">
@@ -23,7 +26,6 @@
       </div>
     </div>
     <script src="src/lib/SAT.js"></script>
-    <script src="src/lib/Perlin.js"></script>
     <script src="src/network.js"></script>
     <script src="src/resources.js"></script>
     <script src="src/chat.js"></script>

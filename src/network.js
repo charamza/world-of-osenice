@@ -24,10 +24,11 @@ class Network {
     };
   }
 
-  login(name) {
+  login(name, color) {
     var data = {
       s: 'l',
-      name: name
+      name: name,
+      color: color
     };
     this.send(data);
     this.loggedIn = true;

@@ -21,11 +21,11 @@ class Entity {
     this.onetime = {};
 
     this.polygon = new SAT.Polygon( new SAT.Vector(),[
-      new SAT.Vector(0, 0),
+      new SAT.Vector(-this.width / 2, -this.height / 2),
+      new SAT.Vector(-this.width / 2, 0),
       new SAT.Vector(0, this.height / 2),
-      new SAT.Vector(this.width / 2, this.height),
-      new SAT.Vector(this.width, this.height / 2),
-      new SAT.Vector(this.width, 0),
+      new SAT.Vector(this.width / 2, 0),
+      new SAT.Vector(this.width / 2, -this.height / 2),
     ]);
 
     this.polygonBounds = new SAT.Box(new SAT.Vector(), this.width, this.height).toPolygon();
