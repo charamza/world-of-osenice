@@ -149,7 +149,7 @@ class Player extends Entity {
     try {
       this.socket.send(data);
     } catch (e) {
-      console.log(this.server.getConsolePrefix(), e);
+      console.log(this.server.getConsolePrefix(), "Poslal jsi data odpojene osobe...");
       this.server.removeEntity(this);
     }
   }
