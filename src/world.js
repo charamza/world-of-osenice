@@ -10,6 +10,8 @@ class World {
     this.opacity = 1;
     this.radius = 0;
     this.firstStep = game.STEPS;
+
+    this.visibleEntities = [];
   }
 
   setup(callback) {
@@ -43,9 +45,20 @@ class World {
 
         if (this.filename == 'roumen') {
           this.addEntity(new Teleport(this.game, -435, 50, 'forest'));
+          this.addEntity(new Tree(this.game, 5));
+          this.addEntity(new Tree(this.game, 20));
+          this.addEntity(new Tree(this.game, 26));
+          this.addEntity(new Tree(this.game, 56));
+          this.addEntity(new Tree(this.game, 80));
+          this.addEntity(new Tree(this.game, 120));
+          this.addEntity(new Tree(this.game, 170, -45));
         }
         if (this.filename == 'forest') {
           this.addEntity(new Teleport(this.game, 0, -1600, 'roumen'));
+          for (var i = 0; i < 36; i++) {
+            var px = i * 10 + Math.random() * 10;
+            this.addEntity(new Tree(this.game, px));
+          }
         }
 
         callback(this);
@@ -69,9 +82,13 @@ class World {
   }
 
   update() {
+    var screen = this.game.camera.getScreenBounds();
+    this.visibleEntities = [];
     for (var i = 0; i < this.entities.length; i++) {
       this.entities[i].update();
+      if (this.entities[i].inBounds(screen)) this.visibleEntities.push(this.entities[i]);
     }
+    console.log(this.visibleEntities.length);
 
     this.opacity = 1;
     if (this.game.player.teleportingSteps > 300) {
@@ -111,7 +128,7 @@ class World {
       length++;
     }
     gl.stroke();
-    for (var i = 0; i < this.entities.length; i++) {
+    for (var i = 0; i < this.visibleEntities.length; i++) {
       this.entities[i].render(gl);
     }
     gl.restore();
@@ -121,7 +138,7 @@ class World {
     gl.save();
     gl.globalAlpha = this.opacity;
     this.game.camera.translate(gl);
-    for (var i = 0; i < this.entities.length; i++) {
+    for (var i = 0; i < this.visibleEntities.length; i++) {
       this.entities[i].postrender(gl);
     }
     gl.restore();

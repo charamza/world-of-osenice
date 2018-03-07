@@ -2,7 +2,7 @@ class Network {
 
   constructor(game) {
     this.game = game;
-    this.address = '127.0.0.1';
+    this.address = '89.221.215.129';
     this.port = '6060';
     this.loggedIn = false;
 

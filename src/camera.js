@@ -4,13 +4,15 @@ class Camera {
     this.game = game;
     this.x = 0;
     this.y = 0;
+    this.cx = 0;
+    this.cy = 0;
   }
 
   update(entity) {
     this.x = this.game.WIDTH / 2 - entity.getX();
     this.y = this.game.HEIGHT / 2 - entity.getY();
-    /*this.x -= Math.sin(this.game.world.rot) * 800;
-    this.y -= Math.cos(this.game.world.rot) * 800;*/
+    this.cx = entity.getX();
+    this.cy = entity.getY();
   }
 
   translate(gl) {

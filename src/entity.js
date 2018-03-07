@@ -63,4 +63,8 @@ class Entity {
     if (data.dx !== undefined) this.dx = data.dx;
   }
 
+  inBounds() {
+    return true; //(Math.sqrt(Math.pow(this.getX() - this.game.camera.cx, 2) + Math.pow(this.getY() - this.game.camera.cy, 2)) < (this.game.WIDTH / 2 + this.game.HEIGHT / 2 + this.width + this.height));
+  }
+
 }
